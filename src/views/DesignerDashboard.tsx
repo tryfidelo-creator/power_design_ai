@@ -52,7 +52,13 @@ export const DesignerDashboard: React.FC<DesignerDashboardProps> = ({ onBack }) 
     }, 50);
 
     try {
-      const model = "gemini-3-flash-preview";
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error('GEMINI_API_KEY is not configured in environment variables.');
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const model = "gemini-3.1-pro-preview"; // Using Pro for complex engineering analysis
       const prompt = `As a Senior Power Electronics Architect, analyze these design parameters for a power converter:
       Input Voltage: ${params.vIn}V
       Output Voltage: ${params.vOut}V
@@ -67,15 +73,16 @@ export const DesignerDashboard: React.FC<DesignerDashboardProps> = ({ onBack }) 
       4. EMI considerations
       Use professional engineering terminology.`;
 
-      const response = await genAI.models.generateContent({
+      const response = await ai.models.generateContent({
         model,
         contents: [{ parts: [{ text: prompt }] }],
       });
 
       setAiInsights(response.text || 'Optimization complete. Analysis failed to generate.');
     } catch (error) {
-      console.error('AI Error:', error);
-      setAiInsights('Error during AI synthesis. Check system logs.');
+      console.error('AI Synthesis Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown synthesis error';
+      setAiInsights(`Error during AI synthesis: ${errorMessage}. Please check your API key configuration.`);
     } finally {
       setIsOptimizing(false);
     }
