@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;800&family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;600;800&display=swap');
+
+@theme {
+  --color-substrate: #0a0f14;
+  --color-high-voltage: #00f2ff;
+  --color-thermal-alert: #ff3e00;
+  --color-component-neutral: #1e293b;
+  
+  --font-sans: "Public Sans", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-substrate);
+    color: #f8fafc;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+}
+
+.grid-overlay {
+  background-image: radial-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.faraday-cage {
+  position: relative;
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  clip-path: polygon(
+    0 10px, 10px 0, 
+    calc(100% - 10px) 0, 100% 10px, 
+    100% calc(100% - 10px), calc(100% - 10px) 100%, 
+    10px 100%, 0 calc(100% - 10px)
+  );
+}
+
+.faraday-cage::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  pointer-events: none;
+}
+
+.trace-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-high-voltage), transparent);
+  opacity: 0.3;
+}
+
+@keyframes power-flow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.power-flow-border::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-high-voltage), transparent);
+  animation: power-flow 3s linear infinite;
+}
